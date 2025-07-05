@@ -3,10 +3,10 @@ import React, { useEffect, useState } from "react";
 const Oderslist = () => {
   const [orders, setOrders] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
-
+ const API_URI = import.meta.env.VITE_API_URI;
   const fetchOrders = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/orders");
+      const response = await fetch(`${API_URI}/api/orders`);
       if (!response.ok) throw new Error("Failed to fetch orders");
       const data = await response.json();
       setOrders(data);
@@ -25,7 +25,7 @@ const Oderslist = () => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+      const response = await fetch(`${API_URI}/api/orders/${orderId}`, {
         method: "DELETE",
       });
 
@@ -42,7 +42,7 @@ const Oderslist = () => {
     if (currentStatus === "Finished") return alert("Already marked as Finished");
 
     try {
-      const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+      const response = await fetch(`${API_URI}/api/orders/${orderId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "Finished" }),

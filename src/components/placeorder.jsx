@@ -8,6 +8,7 @@ const Placeorder = () => {
   const [customerName, setCustomerName] = useState("");
   const [confirmationMsg, setConfirmationMsg] = useState("");
   const navigate = useNavigate(); // 👈
+ const API_URI = import.meta.env.VITE_API_URI;
 
   const handleOrder = async () => {
     if (!customerName) {
@@ -22,7 +23,7 @@ const Placeorder = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/api/orders", {
+      const response = await fetch(`${API_URI}/api/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(order),

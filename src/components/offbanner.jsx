@@ -3,11 +3,11 @@ import OfferCard from "../layouts/offercard.jsx";
 
 const OfferBannerSection = () => {
   const [offers, setOffers] = useState([]);
-
+ const API_URI = import.meta.env.VITE_API_URI;
   useEffect(() => {
     const fetchOffers = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/offers");
+        const res = await fetch(`${API_URI}/api/offers`);
         const data = await res.json();
         setOffers(data);
       } catch (error) {
