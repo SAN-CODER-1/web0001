@@ -3,9 +3,13 @@ import React, { useEffect, useState } from "react";
 const Oderslist = () => {
   const [orders, setOrders] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
- const API_URI = import.meta.env.VITE_API_URI;
+  const [loading, setLoading] = useState(true); // ✅ NEW
+
+  const API_URI = import.meta.env.VITE_API_URI;
+
   const fetchOrders = async () => {
     try {
+      setLoading(true); // ✅ Start spinner
       const response = await fetch(`${API_URI}/api/orders`);
       if (!response.ok) throw new Error("Failed to fetch orders");
       const data = await response.json();
@@ -13,6 +17,8 @@ const Oderslist = () => {
     } catch (error) {
       console.error("Error:", error);
       setErrorMsg("Unable to load orders");
+    } finally {
+      setLoading(false); // ✅ End spinner
     }
   };
 
@@ -52,9 +58,9 @@ const Oderslist = () => {
 
       const data = await response.json();
 
-      setOrders(orders.map((order) =>
-        order._id === orderId ? data.order : order
-      ));
+      setOrders(
+        orders.map((order) => (order._id === orderId ? data.order : order))
+      );
     } catch (error) {
       console.error("Update error:", error);
       alert("Failed to update order status");
@@ -67,7 +73,12 @@ const Oderslist = () => {
         🛒 Admin Dashboard – Orders Overview
       </h1>
 
-      {errorMsg ? (
+      {loading ? (
+        // ✅ Loading Spinner
+        <div className="flex justify-center items-center py-20">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : errorMsg ? (
         <div className="text-center text-red-600">{errorMsg}</div>
       ) : orders.length === 0 ? (
         <div className="text-center text-gray-600">No orders found</div>
@@ -91,7 +102,11 @@ const Oderslist = () => {
                   <td className="py-2 px-4">{order.items.join(", ")}</td>
                   <td className="py-2 px-4">₹{order.totalAmount}</td>
                   <td className="py-2 px-4">
-                    <span className={`px-2 py-1 rounded text-white ${order.status === "Finished" ? "bg-green-600" : "bg-yellow-600"}`}>
+                    <span
+                      className={`px-2 py-1 rounded text-white ${
+                        order.status === "Finished" ? "bg-green-600" : "bg-yellow-600"
+                      }`}
+                    >
                       {order.status}
                     </span>
                   </td>
@@ -100,7 +115,9 @@ const Oderslist = () => {
                   </td>
                   <td className="py-2 px-4 flex gap-2">
                     <button
-                      onClick={() => handleStatusUpdate(order._id, order.status)}
+                      onClick={() =>
+                        handleStatusUpdate(order._id, order.status)
+                      }
                       className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
                     >
                       Mark Finished
@@ -121,8 +138,5 @@ const Oderslist = () => {
     </div>
   );
 };
-
-
-
 
 export default Oderslist;

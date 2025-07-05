@@ -10,16 +10,20 @@ const AdminOffers = () => {
   });
 
   const [offers, setOffers] = useState([]);
+  const [loading, setLoading] = useState(true); // ✅ Added loading state
 
   const API_URI = import.meta.env.VITE_API_URI;
 
   const fetchOffers = async () => {
     try {
-      const res = await fetch(`${API_URI}/api/offers`,);
+      setLoading(true); // ✅ Start loading
+      const res = await fetch(`${API_URI}/api/offers`);
       const data = await res.json();
       setOffers(data);
     } catch (error) {
       console.error("Error fetching offers:", error);
+    } finally {
+      setLoading(false); // ✅ Stop loading
     }
   };
 
@@ -64,6 +68,8 @@ const AdminOffers = () => {
   return (
     <div className="p-10">
       <h2 className="text-2xl font-bold mb-4">🛠️ Manage Offers</h2>
+
+      {/* FORM */}
       <form className="grid gap-4 mb-6" onSubmit={handleSubmit}>
         <input
           className="border p-2"
@@ -103,26 +109,33 @@ const AdminOffers = () => {
         </button>
       </form>
 
-      <div>
-        {offers.map((offer) => (
-          <div
-            key={offer._id}
-            className="mb-4 p-4 border rounded flex justify-between"
-          >
-            <div>
-              <strong>{offer.productId?.title || offer.productId}</strong> –{" "}
-              {offer.discountPercent}% off (₹{offer.oldPrice} → ₹
-              {offer.newPrice})
-            </div>
-            <button
-              className="bg-red-500 text-white px-3 py-1 rounded"
-              onClick={() => handleDelete(offer._id)}
+      {/* LOADING SPINNER */}
+      {loading ? (
+        <div className="flex justify-center items-center py-10">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        <div>
+          {offers.map((offer) => (
+            <div
+              key={offer._id}
+              className="mb-4 p-4 border rounded flex justify-between"
             >
-              Delete
-            </button>
-          </div>
-        ))}
-      </div>
+              <div>
+                <strong>{offer.productId?.title || offer.productId}</strong> –{" "}
+                {offer.discountPercent}% off (₹{offer.oldPrice} → ₹
+                {offer.newPrice})
+              </div>
+              <button
+                className="bg-red-500 text-white px-3 py-1 rounded"
+                onClick={() => handleDelete(offer._id)}
+              >
+                Delete
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
